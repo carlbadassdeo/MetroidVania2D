@@ -16,6 +16,12 @@ public class PlayerMovement : MonoBehaviour
     //variables to play with
     public float speed = 2.0f;
     public float horizMovement; // can be -1, 1, or 0
+ 
+    private bool playerJump = false;
+
+    [Range(1,10)]
+    public float JumpSpeed = 2.0f;
+
 
     // Start is called before the first frame update
     private void Start()
@@ -25,13 +31,18 @@ public class PlayerMovement : MonoBehaviour
         myAnimator = GetComponent<Animator>();
     }
 
+
     // Update is called once per frame
     //Handles inputs for the physics
     private void Update()
     {
         //check if the player has input movement
         horizMovement = Input.GetAxis("Horizontal");
+        playerJump = Input.GetButtonDown("Jump");
+
+        Jump(playerJump);
     }
+
 
     //Updates with the CPU clock
     //handles running the physics
@@ -43,7 +54,11 @@ public class PlayerMovement : MonoBehaviour
 
         //Set the speed value in the animator to the absolute value of the horizontal movement.
         myAnimator.SetFloat("AniSpeed", Mathf.Abs(horizMovement));
+        
+        //call Jump function
+        //Jump(playerJump);
     }
+
 
     //Flipping function
     private void Flip(float horizontal)
@@ -57,4 +72,21 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = theScale; //update the transform component
         }
     }
+
+
+    //Jumping Function
+    private void Jump(bool jump)
+    {
+        if (jump)
+        {
+            rb2D.velocity = new Vector2(rb2D.velocity.x, 0);
+            rb2D.velocity += Vector2.up * JumpSpeed;
+
+            //Set the AniJump value in the animator the jump boolean
+            myAnimator.SetBool("AniJump", playerJump);
+            
+            playerJump = false;
+        }
+    }
+
 }
